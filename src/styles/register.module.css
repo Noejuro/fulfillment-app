@@ -1,0 +1,5 @@
+.registerCard { width: 100%; max-width: 44rem; border-radius: 25px !important; }
+
+@media only screen and (max-width: 600px) {
+    .registerCard { box-shadow: none !important; }
+}

@@ -4,18 +4,19 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
+import './styles/mainStyles.css'
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 
 const theme = createTheme({
   palette: {
      primary: {
-        main: "#537895" // This is an orange looking color
-               },
-     secondary: {
-        main: "#09203f" //Another orange-ish color
-                }
+        main: "#537895"
       },
+     secondary: {
+        main: "#09203f"
+     }
+  },
 });
 
 ReactDOM.render(
