@@ -14,7 +14,7 @@ export default function Main(): JSX.Element {
     };
 
     return(
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', height: "100%" }}>
             <MainAppBar open={open} handleDrawer={handleDrawer} />
             <MainDrawer open={open} handleDrawer={handleDrawer} />
             <MainContainer />
