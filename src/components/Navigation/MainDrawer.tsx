@@ -3,8 +3,10 @@ import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, useTh
 import { Link } from 'react-router-dom';
 
 //Icons
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import StoreIcon from '@mui/icons-material/Store';
+import CategoryIcon from '@mui/icons-material/Category';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 interface IProps {
     open: boolean,
@@ -15,8 +17,8 @@ const drawerWidth: number = 200;
 
 export default function MainDrawer(props: IProps): JSX.Element {
 
-    const theme = useTheme();
-    const breakpoint = useMediaQuery(theme.breakpoints.up('md'));
+    const theme         = useTheme();
+    const breakpoint    = useMediaQuery(theme.breakpoints.up('md'));
 
     const {open, handleDrawer} = props;
     
@@ -42,22 +44,36 @@ export default function MainDrawer(props: IProps): JSX.Element {
             <Toolbar />
             <Box sx={{ overflow: 'auto' }}>
                 <List>
-                    <Link to="/products"> 
-                        <ListItem button>
-                            <ListItemIcon>
-                                <InboxIcon sx={{color: "white"}} />
-                            </ListItemIcon>
-                            <ListItemText sx={{color: "white"}} primary="Products" />
-                        </ListItem>
-                    </Link>
                     <Link to="/orders"> 
                         <ListItem button>
                             <ListItemIcon>
-                                <MailIcon sx={{color: "white"}} />
+                                <ShoppingCartIcon sx={{color: "white"}} />
                             </ListItemIcon>
                             <ListItemText  sx={{color: "white"}} primary="Orders" />
                         </ListItem>
                     </Link>
+                    <Link to="/products"> 
+                        <ListItem button>
+                            <ListItemIcon>
+                                <CategoryIcon sx={{color: "white"}} />
+                            </ListItemIcon>
+                            <ListItemText sx={{color: "white"}} primary="Products" />
+                        </ListItem>
+                    </Link>
+                    <Link to="/warehouses"> 
+                        <ListItem button>
+                            <ListItemIcon>
+                                <StoreIcon sx={{color: "white"}} />
+                            </ListItemIcon>
+                            <ListItemText  sx={{color: "white"}} primary="Warehouses" />
+                        </ListItem>
+                    </Link>
+                    <ListItem button>
+                        <ListItemIcon>
+                            <ExitToAppIcon sx={{color: "white"}} />
+                        </ListItemIcon>
+                        <ListItemText  sx={{color: "white"}} primary="Logout" />
+                    </ListItem>
                 </List>
             </Box>
         </Drawer>

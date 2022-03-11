@@ -9,8 +9,10 @@ import Form from '../../components/Register/Form'
 import registerStyle from '../../styles/register.module.css'
 
 export default function Register(): JSX.Element {
-    const theme = useTheme();
-    const breakpoint = useMediaQuery(theme.breakpoints.up('sm'));
+
+    const theme         = useTheme();
+    const breakpoint    = useMediaQuery(theme.breakpoints.up('sm'));
+
     return(
         <div className={`row h-100 w-100 justify-content-center align-items-center p-2 ${breakpoint && 'mainBackground'} mx-0`}>
             <div className='col-auto text-center'>
