@@ -16,7 +16,7 @@ export default function MainContainer(): JSX.Element {
         <Box component="main" sx={{ flexGrow: 1, p: 0, height: "100%" }}>
             <div className="col h-100">
                 <div className="d-flex flex-row flex-grow-1 mx-0 h-100">
-                    <div className={`d-flex flex-column pb-3 h-100 flex-grow-1 ${breakpoint ? 'px-5' : 'px-4' }`}>
+                    <div className={`d-flex flex-column pb-3 h-100 flex-grow-1 ${breakpoint ? 'px-5' : 'px-3' }`}>
                         <Toolbar className="mb-2" />
                         <Routes>
                             <Route path="/"             element={<Navigate to="/orders" />} />
