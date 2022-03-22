@@ -1,16 +1,45 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button, TextField, Typography } from '@mui/material'
-import { useForm, SubmitHandler } from 'react-hook-form';
-
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { useSelector, useDispatch } from 'react-redux'
+import { registerUser, reset } from '../../features/auth/authSlice'
+import { RootState } from '../../store';
+import { toast } from 'react-toastify'
 interface IFormInput {
     [x: string]: any
 }
 
+interface IRegister {
+    name: string,
+    company: string,
+    email: string,
+    phone: string,
+    password: string,
+    confirmPassword?: string
+}
+
 export default function Form(): JSX.Element {
 
-    const { register, handleSubmit,  formState: { errors }  } = useForm();
+    const dispatch = useDispatch();
 
-    const onSubmit: SubmitHandler<IFormInput> = data => console.log(data);
+    const { register, handleSubmit,  formState: { errors }  } = useForm<IRegister>();
+
+    const { user, isError, isSuccess, message } = useSelector((state: RootState) => state.auth)
+
+    const onSubmit: SubmitHandler<IRegister> = data => {
+        delete data.confirmPassword
+        const userData: IRegister = {...data}
+        dispatch(registerUser(userData));
+    };
+
+    useEffect(() => {
+        if(isError)
+            toast.error(message as string);
+
+        if(isError || isSuccess)
+            dispatch(reset());
+        
+    }, [isError, isSuccess, message, dispatch])
 
     return(
         <div className="col text-center m-auto pt-4" style={{maxWidth: "18rem"}} >
