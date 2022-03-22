@@ -33,7 +33,7 @@ export default function Form(): JSX.Element {
                     error={!!errors.email}
                     {...register("email", {required: true, pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/})} />
 
-                {!!errors.email && errors.email.type === "pattern" &&
+                {errors?.email?.type === "pattern" &&
                     <>
                         <br />
                         <Typography color="error" variant="caption"> Invalid Email </Typography>
@@ -45,10 +45,9 @@ export default function Form(): JSX.Element {
                 <TextField id="phone" label="Phone Number" variant='outlined' size='small' color='primary' className='mt-2 w-100'
                     required
                     error={!!errors.phone}
-                    {...register("phone", {required: true, pattern: /^[0-9\+]{10,13}$/ })}
-                    />
+                    {...register("phone", {required: true, pattern: /^[0-9\+]{10,13}$/ })} />
 
-                {!!errors.phone && errors.phone.type === "pattern" &&
+                {errors?.phone?.type === "pattern" &&
                     <>
                         <br />
                         <Typography color="error" variant="caption"> Invalid Phone </Typography>
@@ -62,7 +61,7 @@ export default function Form(): JSX.Element {
                     error={!!errors.password}
                     {...register('password', {required: true, minLength: 8})} /> 
                 
-                {!!errors.password && errors.password.type === "minLength" &&
+                {errors?.password?.type === "minLength" &&
                     <>
                         <br />
                         <Typography color="error" variant="caption"> Password must be at least 8 characters long </Typography>
@@ -76,7 +75,7 @@ export default function Form(): JSX.Element {
                     error={!!errors.confirmPassword}
                     {...register('confirmPassword', {required: true, minLength: 8})} /> 
                 
-                {!!errors.confirmPassword && errors.confirmPassword.type === "minLength" &&
+                {errors?.confirmPassword?.type === "minLength" &&
                     <>
                         <br />
                         <Typography color="error" variant="caption"> Password must be at least 8 characters long </Typography>
