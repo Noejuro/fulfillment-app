@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import NoAuth from './views/Not Auth/NotAuth';
 import Main from './views/Main/Main';
 
-const loggedIn: boolean = false;
+const loggedIn: boolean = true;
 
 function App() {
   return (

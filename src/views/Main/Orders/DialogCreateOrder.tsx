@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Dialog, DialogTitle, useTheme, useMediaQuery, DialogContent, Typography, DialogActions, Button, Grid, Autocomplete, TextField, Box } from '@mui/material'
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
@@ -32,6 +33,10 @@ interface IStore {
     name: string
 }
 
+interface IFormInput {
+    [x: string]: any
+}
+
 export default function DialogCreateOrder(props: IProps): JSX.Element {
 
     const { handleClose, open } = props;
@@ -43,6 +48,8 @@ export default function DialogCreateOrder(props: IProps): JSX.Element {
     const [selectedStore, setSelectedStore] = useState<IStore | null>(null)
     const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null)
     const [selectedProducts, setSelectedProducts] = useState<IProduct[] | []>([])
+
+    const { register, handleSubmit,  formState: { errors }  } = useForm();
 
     const stores = [
         {id: 1, name: "Wix"},
@@ -66,6 +73,9 @@ export default function DialogCreateOrder(props: IProps): JSX.Element {
         {id: 4, name: "PSG Jersey", price: 2000, sku: "PSG2022", quantity: 500, img: "https://www.innovasport.com/medias/IS-CV7902-101-1.png?context=bWFzdGVyfGltYWdlc3w1NTYxOHxpbWFnZS9wbmd8aW1hZ2VzL2hjYS9oODEvMTAzMjA4ODA0Njc5OTgucG5nfDJhNjgzMjc3ZWQxZWMwNDlkZTY2NTg1N2I5OWY0YTUwYTQ5NDY3N2M4M2Y2OWU1YjMzODk0MDhjMTMzMzRmZjc"  },
         {id: 5, name: "Headband Nike", price: 500, sku: "NIKEHEADBAND", quantity: 8, img: "https://www.traininn.com/f/3/39728/nike-headband-swoosh.jpg"  }
     ]
+
+
+    const onSubmit: SubmitHandler<IFormInput> = data => console.log(data);
 
     const handleChangeProduct = (event: any, newValue: IProduct | null): void => {
         setSelectedProduct(newValue);
@@ -95,89 +105,131 @@ export default function DialogCreateOrder(props: IProps): JSX.Element {
     return(
         <Dialog onClose={handleClose} open={open} fullScreen={fullScreen} maxWidth="xl" fullWidth>
             <DialogTitle> Create Order </DialogTitle>
-            <DialogContent dividers>
-                <Grid container>
-                    <Grid item xs={12} md={6} className="p-2">
-                        <Typography className='fw-bold pb-3' variant='h6'> Select Products </Typography>
-                        <Autocomplete
-                            id="selectProduct"
-                            options={products}
-                            value={selectedProduct}
-                            onChange={handleChangeProduct}
-                            getOptionLabel={(option: IProduct) => option.name}
-                            isOptionEqualToValue={(option: IProduct, value: IProduct) => option.id === value.id}
-                            renderInput={(params) => <TextField {...params} label="Select Product" />}
-                            renderOption={(props, option: IProduct) => (
-                                <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                    <img src={option.img} alt={option.name} className={`responsiveImage`} style={{maxWidth: "2rem"}} />
-                                    {option.name} 
-                                </Box>
-                            )}
-                            className="mb-2"
-                            />
-                        {!!selectedProducts.length &&
-                            selectedProducts.map((product: IProduct, index: number) => (
-                                <Grid container key={product.sku} className="p-2" alignItems="center" justifyContent="center" >
-                                    <Grid item xs="auto" alignItems="center">
-                                        <Zoom>
-                                            <img src={product.img} alt={product.name} className={`responsiveImage`} style={{maxWidth: "3rem"}} />
-                                        </Zoom>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <DialogContent dividers>
+                    <Grid container>
+
+                        {/* PRODUCTS Section */}
+                        <Grid item xs={12} md={6} className="p-2">
+                            <Typography className='fw-bold pb-3' variant='h6'> Select Products </Typography>
+                            <Autocomplete
+                                id="selectProduct"
+                                options={products}
+                                value={selectedProduct}
+                                onChange={handleChangeProduct}
+                                getOptionLabel={(option: IProduct) => option.name}
+                                isOptionEqualToValue={(option: IProduct, value: IProduct) => option.id === value.id}
+                                renderInput={(params) => <TextField {...params} label="Select Product*" />}
+                                renderOption={(props, option: IProduct) => (
+                                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                        <img src={option.img} alt={option.name} className={`responsiveImage`} style={{maxWidth: "2rem"}} />
+                                        {option.name} 
+                                    </Box>
+                                )}
+                                className="mb-2"
+                                />
+                            {!!selectedProducts.length &&
+                                selectedProducts.map((product: IProduct, index: number) => (
+                                    <Grid container key={product.sku} className="p-2" alignItems="center" justifyContent="center" >
+                                        <Grid item xs="auto" alignItems="center">
+                                            <Zoom>
+                                                <img src={product.img} alt={product.name} className={`responsiveImage`} style={{maxWidth: "3rem"}} />
+                                            </Zoom>
+                                        </Grid>
+                                        <Grid item xs className='px-3'>
+                                            <Typography className='fw-bold lh-1' > {product.name} </Typography>
+                                            <Typography variant='overline' className="lh-1"> {product.sku} </Typography>
+                                            <Typography > ${product.price} </Typography>
+                                        </Grid>
+                                        <Grid item xs="auto" className="py-1">
+                                            <Button onClick={() => substractQuantity(index)} variant='contained' className='me-2' sx={{padding: "1px", maxWidth: 30, minWidth: 30}}> - </Button>
+                                                {product.quantity}
+                                            <Button onClick={() => addQuantity(index)} variant='contained' className='ms-2' sx={{padding: "1px", maxWidth: 30, minWidth: 30}}> + </Button>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs className='px-3'>
-                                        <Typography className='fw-bold lh-1' > {product.name} </Typography>
-                                        <Typography variant='overline' className="lh-1"> {product.sku} </Typography>
-                                        <Typography > ${product.price} </Typography>
-                                    </Grid>
-                                    <Grid item xs="auto" className="py-1">
-                                        <Button onClick={() => substractQuantity(index)} variant='contained' className='me-2' sx={{padding: "1px", maxWidth: 30, minWidth: 30}}> - </Button>
-                                            {product.quantity}
-                                        <Button onClick={() => addQuantity(index)} variant='contained' className='ms-2' sx={{padding: "1px", maxWidth: 30, minWidth: 30}}> + </Button>
-                                    </Grid>
-                                </Grid>
-                            ))
-                        }
+                                ))
+                            }
+                        </Grid>
+
+                        {/* CLIENT Section */}
+                        <Grid item xs={12} md={6} className="p-2">
+                            <Typography className='fw-bold pb-3' variant='h6'> Client </Typography>
+                            <TextField id="name" label="Name" variant='outlined' size='small' color='primary' className='w-100'
+                                required
+                                error={!!errors.name}
+                                {...register("name", {required: true})} />
+                            
+                            <TextField id="email" label="Email" variant='outlined' size='small' color='primary' className='w-100 mt-2' type="email"
+                                required
+                                error={!!errors.email}
+                                {...register("email", {required: true, pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/})} />
+
+                            {errors?.email?.type === "pattern" &&
+                                <>
+                                    <br />
+                                    <Typography color="error" variant="caption"> Invalid Email </Typography>
+                                </>
+                                
+                            }
+
+                            <TextField id="phone" label="Phone" variant='outlined' size='small' color='primary' className='w-100 mt-2' 
+                                required
+                                error={!!errors.phone}
+                                {...register("phone", {required: true, pattern: /^[0-9\+]{10,13}$/ })} />
+
+                            {errors?.phone?.type === "pattern" &&
+                                <>
+                                    <br />
+                                    <Typography color="error" variant="caption"> Invalid Phone </Typography>
+                                </>
+                                
+                            }
+                            <TextField id="address" label="Address" variant='outlined' size='small' color='primary' className='w-100 mt-2' 
+                                required
+                                error={!!errors.address}
+                                {...register("address", {required: true})} />
+
+                        </Grid>
+
+                        {/* WAREHOUSE Section */}
+                        <Grid item xs={12} md={6} className="p-2">
+                            <Typography className='fw-bold pb-3' variant='h6'> Warehouse </Typography>
+                            <Autocomplete
+                                id="selectWarehouse"
+                                options={warehouses}
+                                value={selectedWarehouse}
+                                onChange={(event: any, newValue: IWarehouse | null) => {
+                                    setSelectedWarehouse(newValue);
+                                }}
+                                getOptionLabel={(option: IWarehouse) => option.name}
+                                isOptionEqualToValue={(option: IWarehouse, value: IWarehouse) => option.id === value.id}
+                                renderInput={(params) => <TextField {...params} required label="Select Warehouse" />}
+                                />
+                        </Grid>
+
+                        {/* STORE Section */}
+                        <Grid item xs={12} md={6} className="p-2">
+                            <Typography className='fw-bold pb-3' variant='h6'> Store </Typography>
+                            <Autocomplete
+                                id="selectStore"
+                                options={stores}
+                                value={selectedStore}
+                                onChange={(event: any, newValue: IStore | null) => {
+                                    setSelectedStore(newValue);
+                                }}
+                                getOptionLabel={(option: IStore) => option.name}
+                                isOptionEqualToValue={(option: IStore, value: IStore) => option.id === value.id}
+                                renderInput={(params) => <TextField {...params} required label="Select Store" />}
+                                />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} md={6} className="p-2">
-                        <Typography className='fw-bold pb-3' variant='h6'> Client </Typography>
-                        <TextField required id="clientName" label="Name" variant='outlined' size='small' color='primary' className='w-100 mb-1'/>
-                        <TextField required id="clientEmail" label="Email" variant='outlined' size='small' color='primary' className='w-100 my-1'/>
-                        <TextField required id="clientPhone" label="Phone" variant='outlined' size='small' color='primary' className='w-100 my-1' />
-                        <TextField required id="clientAddress" label="Address" variant='outlined' size='small' color='primary' className='w-100 mt-1'/>
-                    </Grid>
-                    <Grid item xs={12} md={6} className="p-2">
-                        <Typography className='fw-bold pb-3' variant='h6'> Warehouse </Typography>
-                        <Autocomplete
-                            id="selectWarehouse"
-                            options={warehouses}
-                            value={selectedWarehouse}
-                            onChange={(event: any, newValue: IWarehouse | null) => {
-                                setSelectedWarehouse(newValue);
-                            }}
-                            getOptionLabel={(option: IWarehouse) => option.name}
-                            isOptionEqualToValue={(option: IWarehouse, value: IWarehouse) => option.id === value.id}
-                            renderInput={(params) => <TextField {...params} label="Select Warehouse" />}
-                            />
-                    </Grid>
-                    <Grid item xs={12} md={6} className="p-2">
-                        <Typography className='fw-bold pb-3' variant='h6'> Store </Typography>
-                        <Autocomplete
-                            id="selectStore"
-                            options={stores}
-                            value={selectedStore}
-                            onChange={(event: any, newValue: IStore | null) => {
-                                setSelectedStore(newValue);
-                            }}
-                            getOptionLabel={(option: IStore) => option.name}
-                            isOptionEqualToValue={(option: IStore, value: IStore) => option.id === value.id}
-                            renderInput={(params) => <TextField {...params} label="Select Store" />}
-                            />
-                    </Grid>
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose} > Close </Button>
-                <Button onClick={handleClose} variant="contained" > Create </Button>
-            </DialogActions>
+                </DialogContent>
+            
+                <DialogActions>
+                    <Button onClick={handleClose} > Close </Button>
+                    <Button type="submit" variant="contained" > Create </Button>
+                </DialogActions>
+            </form>
         </Dialog>
     )
 }
