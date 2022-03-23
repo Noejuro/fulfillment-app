@@ -1,6 +1,9 @@
 import React from 'react'
 import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, useTheme, useMediaQuery } from '@mui/material'
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout, reset } from '../../features/auth/authSlice'
+import { reset as resetProducts } from '../../features/products/productsSlice'
 
 //Icons
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -19,8 +22,15 @@ export default function MainDrawer(props: IProps): JSX.Element {
 
     const theme         = useTheme();
     const breakpoint    = useMediaQuery(theme.breakpoints.up('md'));
+    const dispatch      = useDispatch()
 
     const {open, handleDrawer} = props;
+
+    const onLogout = () => {
+        dispatch(logout());
+        dispatch(reset());
+        dispatch(resetProducts())
+    }
     
     return(
         <Drawer
@@ -68,7 +78,7 @@ export default function MainDrawer(props: IProps): JSX.Element {
                             <ListItemText  sx={{color: "white"}} primary="Warehouses" />
                         </ListItem>
                     </Link>
-                    <ListItem button>
+                    <ListItem button onClick={onLogout}>
                         <ListItemIcon>
                             <ExitToAppIcon sx={{color: "white"}} />
                         </ListItemIcon>

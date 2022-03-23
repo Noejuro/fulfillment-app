@@ -1,27 +1,56 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dialog, DialogContent, DialogTitle, useTheme, useMediaQuery, TextField, DialogActions, Button, Typography } from '@mui/material'
 import { useForm, SubmitHandler } from 'react-hook-form';
+
+//Redux
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { createProduct, resetCreated, getProducts } from '../../../features/products/productsSlice'
+
+// Interfaces
+import INewProduct from '../../../interfaces/NewProduct'
+import { toast } from 'react-toastify';
+
+
 
 interface IProps {
     open: boolean,
     handleClose(): void
 }
 
-interface IFormInput {
-    [x: string]: any
-}
+
 
 export default function DialogAddProduct(props: IProps): JSX.Element {
 
     const { handleClose, open } = props;
     
-    const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const theme         = useTheme();
+    const fullScreen    = useMediaQuery(theme.breakpoints.down('md'));
 
-    const { register, handleSubmit,  formState: { errors }  } = useForm();
+    const dispatch = useDispatch();
+    const { isCreatedSuccess, isCreatedError, message } = useSelector((state: RootState) => state.products)
 
-    const onSubmit: SubmitHandler<IFormInput> = data => console.log(data);
+    const { register, handleSubmit,  formState: { errors }  } = useForm<INewProduct>();
 
+    const onSubmit: SubmitHandler<INewProduct> = data => {
+        dispatch(createProduct(data));
+    };
+
+    useEffect(() => {
+
+        if (isCreatedError) {
+            toast.error(message as string);
+            dispatch(resetCreated());
+        }
+        
+        if (isCreatedSuccess) {
+            toast.success("Product created");
+            dispatch(getProducts());
+            handleClose();
+            dispatch(resetCreated());
+        }
+
+    }, [dispatch, isCreatedError, isCreatedSuccess, message, handleClose])
 
     return(
         <Dialog onClose={handleClose} open={open} fullScreen={fullScreen} maxWidth="sm" fullWidth>
