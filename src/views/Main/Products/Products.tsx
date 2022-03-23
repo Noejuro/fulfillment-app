@@ -1,27 +1,30 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Grid, InputAdornment, Slide, TextField } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search';
+
+//Redux
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { getProducts, reset } from '../../../features/products/productsSlice'
+
+//Components
 import Datatable from '../../../components/shared-components/Table/DataTable';
 import DialogAddProduct from './DialogAddProduct';
 
-interface IData {
-    id: number,
-    name: string,
-    price: number,
-    sku: string,
-    quantity: number,
-    img: string | undefined
-}
+// Interfaces
+import IProduct from '../../../interfaces/Product'
+
+//Icons
+import SearchIcon from '@mui/icons-material/Search';
+import { toast } from 'react-toastify';
 
 export default function Products(): JSX.Element {
 
-    const dummyData = [
-        {id: 1, name: "Tenis Nike", price: 2500, sku: "TENISNIKE100", quantity: 10, img: "https://www.shoesvalley.cn/image/cache/nike/2019/270Ract/2712/27fa7998-800x800.jpg" },
-        {id: 2, name: "Shorts Puma", price: 1000, sku: "PUMASHORTS", quantity: 100, img: "https://ss205.liverpool.com.mx/xl/1092723702.jpg"  },
-        {id: 3, name: "Box Gloves", price: 1500, sku: "BOX1313", quantity: 5, img: "https://cdn.shopify.com/s/files/1/0264/2218/1937/products/BG_ELITE_3.0_WHITE_BLACK_1500_01_1_800x.jpg?v=1643999216"  },
-        {id: 4, name: "PSG Jersey", price: 2000, sku: "PSG2022", quantity: 500, img: "https://www.innovasport.com/medias/IS-CV7902-101-1.png?context=bWFzdGVyfGltYWdlc3w1NTYxOHxpbWFnZS9wbmd8aW1hZ2VzL2hjYS9oODEvMTAzMjA4ODA0Njc5OTgucG5nfDJhNjgzMjc3ZWQxZWMwNDlkZTY2NTg1N2I5OWY0YTUwYTQ5NDY3N2M4M2Y2OWU1YjMzODk0MDhjMTMzMzRmZjc"  },
-        {id: 5, name: "Headband Nike", price: 500, sku: "NIKEHEADBAND", quantity: 8, img: "https://www.traininn.com/f/3/39728/nike-headband-swoosh.jpg"  }
-    ]
+    const dispatch = useDispatch();
+    const { products, isError, message }    = useSelector((state: RootState) => state.products)
+    
+    const [filteredData, setFilteredData]   = useState<IProduct[]>(products)
+    const [search, setSearch]               = useState<string>("")
+    const [open, setOpen]                   = useState(false);
 
     const columns = [
         {id: "img", name: "Image", value: "img", align: 'center' as const, sort: true},
@@ -30,10 +33,21 @@ export default function Products(): JSX.Element {
         {id: "price", name: "Price", value: "price", align: 'center' as const, sort: true},
         {id: "quantity", name: "Quantity", value: "quantity", align: 'center' as const, sort: true}
     ]
-    
-    const [filteredData, setFilteredData]   = useState<IData[]>(dummyData)
-    const [search, setSearch]               = useState<string>("")
-    const [open, setOpen]                   = useState(false);
+
+
+    useEffect(() => {
+        
+        setFilteredData(products)
+
+        if(!products.length)
+            dispatch(getProducts());
+
+        if(isError) {
+            toast.error(message as string);
+            dispatch(reset());
+        }            
+
+    }, [dispatch, products.length, products, isError, message])
   
     const handleClickOpen = () => {
       setOpen(true);
@@ -47,9 +61,9 @@ export default function Products(): JSX.Element {
         const newSearch = event.target.value;
         setSearch(newSearch);
 
-        let keys = Object.keys(dummyData[0]);
+        let keys = Object.keys(products[0]);
 
-        let res = dummyData.filter( (item: IData) => 
+        let res = products.filter( (item: IProduct) => 
              keys.some(( property: string ) => 
                 (item as any)[property].toString().toLowerCase().indexOf(newSearch.toLowerCase()) !== -1
             )

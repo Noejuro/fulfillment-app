@@ -5,16 +5,11 @@ import { useSelector, useDispatch } from 'react-redux'
 import { registerUser, reset } from '../../features/auth/authSlice'
 import { RootState } from '../../store';
 import { toast } from 'react-toastify'
-interface IFormInput {
-    [x: string]: any
-}
 
-interface IRegister {
-    name: string,
-    company: string,
-    email: string,
-    phone: string,
-    password: string,
+//INTERFACE
+import IUser from '../../interfaces/User'
+
+interface IRegister extends IUser {
     confirmPassword?: string
 }
 
@@ -24,7 +19,7 @@ export default function Form(): JSX.Element {
 
     const { register, handleSubmit,  formState: { errors }  } = useForm<IRegister>();
 
-    const { user, isError, isSuccess, message } = useSelector((state: RootState) => state.auth)
+    const { isError, message } = useSelector((state: RootState) => state.auth)
 
     const onSubmit: SubmitHandler<IRegister> = data => {
         delete data.confirmPassword
@@ -33,13 +28,12 @@ export default function Form(): JSX.Element {
     };
 
     useEffect(() => {
-        if(isError)
+        if(isError) {
             toast.error(message as string);
-
-        if(isError || isSuccess)
             dispatch(reset());
+        }
         
-    }, [isError, isSuccess, message, dispatch])
+    }, [isError, message, dispatch])
 
     return(
         <div className="col text-center m-auto pt-4" style={{maxWidth: "18rem"}} >

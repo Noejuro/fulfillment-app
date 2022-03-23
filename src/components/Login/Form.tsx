@@ -1,17 +1,36 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button, TextField, Typography } from '@mui/material'
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { login, reset } from '../../features/auth/authSlice'
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { toast } from 'react-toastify';
 
 interface IFormInput {
-    [x: string]: any
+    email: string,
+    password: string
 }
 
 
 export default function Form(): JSX.Element {
 
-    const { register, handleSubmit,  formState: { errors }  } = useForm();
+    const dispatch = useDispatch()
 
-    const onSubmit: SubmitHandler<IFormInput> = data => console.log(data);
+    const { register, handleSubmit,  formState: { errors }  } = useForm<IFormInput>();
+
+    const { isError, message } = useSelector((state: RootState) => state.auth)
+
+    const onSubmit: SubmitHandler<IFormInput> = userCredentials => {
+        dispatch(login(userCredentials));
+    };
+
+    useEffect(() => {
+        if(isError) {
+            toast.error(message as string);
+            dispatch(reset());
+        }
+        
+    }, [isError, message, dispatch])
 
     return(
         <div className="col m-auto py-4" style={{maxWidth: "18rem"}} >
