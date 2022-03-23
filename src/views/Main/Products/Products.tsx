@@ -20,7 +20,7 @@ import { toast } from 'react-toastify';
 export default function Products(): JSX.Element {
 
     const dispatch = useDispatch();
-    const { products, isError, message }    = useSelector((state: RootState) => state.products)
+    const { products, isError, message, isRequested }    = useSelector((state: RootState) => state.products)
     
     const [filteredData, setFilteredData]   = useState<IProduct[]>(products)
     const [search, setSearch]               = useState<string>("")
@@ -39,7 +39,7 @@ export default function Products(): JSX.Element {
         
         setFilteredData(products)
 
-        if(!products.length)
+        if(!products.length && !isRequested)
             dispatch(getProducts());
 
         if(isError) {
@@ -47,7 +47,7 @@ export default function Products(): JSX.Element {
             dispatch(reset());
         }            
 
-    }, [dispatch, products.length, products, isError, message])
+    }, [dispatch, products.length, products, isError, message, isRequested])
   
     const handleClickOpen = () => {
       setOpen(true);

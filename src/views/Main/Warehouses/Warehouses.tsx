@@ -1,30 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { InputAdornment, Slide, TextField } from '@mui/material'
+
+//Redux
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { getWarehouses, reset } from '../../../features/warehouses/warehousesSlice'
+
 import SearchIcon from '@mui/icons-material/Search';
 import Datatable from '../../../components/shared-components/Table/DataTable';
 
-interface IData {
-    id: number,
-    name: string,
-    email: string,
-    location: string,
-    phone: string,
-    capacity: number
-}
+// Interfaces
+import IWarehouse from '../../../interfaces/Warehouse'
+import { toast } from 'react-toastify';
+
 
 export default function Warehouses(): JSX.Element {
 
-    const dummyData = [
-        {id: 1, name: "Aguascalientes Warehouse", email: "agsw@mail.com", location: "Aguascalientes, Ags", phone: "4491111222", capacity: 5000 },
-        {id: 2, name: "Obispado", email: "contact@obispado.com", location: "Monterrey, Nuevo León", phone: "8123334765", capacity: 15000 },
-        {id: 3, name: "Kanbun", email: "telecon@mail.com", location: "Zapopan, Jalisco", phone: "3331111222", capacity: 10000 },
-        {id: 4, name: "AWS Warehouse", email: "contact@amzn.com", location: "San Pedro Garza García, Nuevo León", phone: "8112222333", capacity: 50000 },
-        {id: 5, name: "Semillero", email: "atm@mail.com", location: "San Nicolas, Nuevo León", phone: "8311111222", capacity: 5000 }
-    ]
+    const dispatch = useDispatch();
+    const { warehouses, isError, message }    = useSelector((state: RootState) => state.warehouses)
     
-    const [filteredData, setFilteredData]   = useState<IData[]>(dummyData)
+    const [filteredData, setFilteredData]   = useState<IWarehouse[]>(warehouses)
     const [search, setSearch]               = useState<string>("")
-
 
     const columns = [
         {id: "name", name: "Warehouse", value: "name", align: 'center' as const, sort: true},
@@ -34,13 +30,27 @@ export default function Warehouses(): JSX.Element {
         {id: "capacity", name: "Capacity", value: "capacity", align: 'center' as const, sort: true}
     ]
 
+    useEffect(() => {
+        
+        setFilteredData(warehouses)
+
+        if(!warehouses.length)
+            dispatch(getWarehouses());
+
+        if(isError) {
+            toast.error(message as string);
+            dispatch(reset());
+        }            
+
+    }, [dispatch, warehouses.length, warehouses, isError, message])
+
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const newSearch = event.target.value;
         setSearch(newSearch);
 
-        let keys = Object.keys(dummyData[0]);
+        let keys = Object.keys(warehouses[0]);
 
-        let res = dummyData.filter( (item: IData) => 
+        let res = warehouses.filter( (item: IWarehouse) => 
              keys.some(( property: string ) => 
                 (item as any)[property].toString().toLowerCase().indexOf(newSearch.toLowerCase()) !== -1
             )
