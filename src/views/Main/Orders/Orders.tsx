@@ -1,39 +1,53 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Grid, InputAdornment, Slide, TextField } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search';
+import { toast } from 'react-toastify';
+
+//Redux
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { getOrders, reset } from '../../../features/orders/ordersSlice'
+
+//Components
 import Datatable from '../../../components/shared-components/Table/DataTable';
 import DialogCreateOrder from './DialogCreateOrder';
 
-interface IData {
-    id: number,
-    shop: string,
-    items: number,
-    customer: string,
-    status: "CREATED" | "PENDING" | "SHIPPING" | "COMPLETED",
-    createdAt: string 
-}
+// Interfaces
+import IOrder from '../../../interfaces/Order'
+
+//Icons
+import SearchIcon from '@mui/icons-material/Search';
 
 export default function Orders(): JSX.Element {
 
-    const dummyData = [
-        {id: 1, shop: "Shopify",    items: 2,   customer: "Noé Juárez", status: "CREATED" as const, createdAt: "16-11-2021 19:10" },
-        {id: 2, shop: "WIX",        items: 1,   customer: "Noé Juárez", status: "PENDING" as const, createdAt: "17-11-2021 15:01" },
-        {id: 3, shop: "WIX",        items: 5,   customer: "Juan Meza", status: "SHIPPING" as const, createdAt: "10-12-2021 13:05" },
-        {id: 4, shop: "Shopify",    items: 10,  customer: "Stone Cold", status: "CREATED" as const, createdAt: "02-08-2021 05:00" },
-        {id: 5, shop: "Shopify",    items: 3,   customer: "Joe Jackson", status: "COMPLETED" as const, createdAt: "02-02-2022 13:10" }
-    ]
-    
-    const columns = [
-        {id: "shop", name: "Shop", value: "shop", align: 'center' as const, sort: true},
-        {id: "items", name: "Items", value: "items", align: 'center' as const, sort: false},
-        {id: "customer", name: "Customer", value: "customer", align: 'center' as const, sort: true},
-        {id: "status", name: "Status", value: "status", align: 'center' as const, sort: true},
-        {id: "createdAt", name: "Date", value: "createdAt", align: 'center' as const, sort: true},
-    ]
-    
-    const [filteredData, setFilteredData]   = useState<IData[]>(dummyData)
+    const dispatch = useDispatch();
+    const { orders, isError, message, isRequested } = useSelector((state: RootState) => state.orders)
+
+    const [filteredData, setFilteredData]   = useState<IOrder[]>(orders)
     const [search, setSearch]               = useState<string>("")
     const [open, setOpen]                   = useState(false);
+    
+    const columns = [
+        {id: "store", name: "Store", value: "store", align: 'center' as const, sort: true},
+        {id: "items", name: "Items", value: "items", align: 'center' as const, sort: false},
+        {id: "client", name: "Client", value: "client", align: 'center' as const, sort: true},
+        {id: "warehouse", name: "Warehouse", value: "warehouse", align: 'center' as const, sort: true},
+        {id: "createdAt", name: "Date", value: "createdAt", align: 'center' as const, sort: true},
+    ]
+
+    useEffect(() => {
+        
+        setFilteredData(orders)
+
+        if(!orders.length && !isRequested)
+            dispatch(getOrders());
+
+        if(isError) {
+            toast.error(message as string);
+            dispatch(reset());
+        }            
+
+    }, [dispatch, orders.length, orders, isError, message, isRequested])
+    
   
     const handleClickOpen = () => {
       setOpen(true);
@@ -47,9 +61,9 @@ export default function Orders(): JSX.Element {
         const newSearch = event.target.value;
         setSearch(newSearch);
 
-        let keys = Object.keys(dummyData[0]);
+        let keys = Object.keys(orders[0]);
 
-        let res = dummyData.filter( (item: IData) => 
+        let res = orders.filter( (item: IOrder) => 
              keys.some(( property: string ) => 
                 (item as any)[property].toString().toLowerCase().indexOf(newSearch.toLowerCase()) !== -1
             )
@@ -86,7 +100,7 @@ export default function Orders(): JSX.Element {
             </Slide>
             <Slide direction="up" in={true} timeout={300}>
                 <div className="d-flex flex-row" style={{overflowY: "auto", borderRadius: "1rem 1rem 0 0"}}>
-                    <Datatable data={filteredData} columns={columns} id={"sku"} />
+                    <Datatable data={filteredData} columns={columns} id={"_id"} />
                 </div>
             </Slide>
             <DialogCreateOrder open={open} handleClose={handleClose} />

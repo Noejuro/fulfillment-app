@@ -55,7 +55,7 @@ export default function DialogAddProduct(props: IProps): JSX.Element {
     return(
         <Dialog onClose={handleClose} open={open} fullScreen={fullScreen} maxWidth="sm" fullWidth>
             <DialogTitle> Add Product </DialogTitle>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} >
                 <DialogContent dividers>
                     {/* NAME Input */}
                     <TextField id="name" label="Name" variant='outlined' size='small' color='primary' className='w-100 mb-2'

@@ -12,6 +12,8 @@ interface IInitalState {
     isRequested: boolean,
     isCreatedSuccess: boolean,
     isCreatedError: boolean,
+    isDeletedSuccess: boolean,
+    isDeletedError: boolean,
     message: string | unknown
 }
 
@@ -21,6 +23,8 @@ const initialState: IInitalState = {
     isRequested: false,
     isCreatedSuccess: false,
     isCreatedError: false,
+    isDeletedSuccess: false,
+    isDeletedError: false,
     message: ''
 }
 
@@ -48,6 +52,18 @@ export const createProduct = createAsyncThunk(
         }
 })
 
+//Delete product
+export const deleteProduct = createAsyncThunk(
+    'products/delete', 
+    async (id: string, thunkAPI) => {
+        try {
+            return await productsService.deleteProduct(id);
+        } catch (error) {
+            const err = error as AxiosError
+            return thunkAPI.rejectWithValue(err.response?.data.message);
+        }
+})
+
 export const productsSlice = createSlice({
     name: 'products',
     initialState,
@@ -61,6 +77,11 @@ export const productsSlice = createSlice({
         resetCreated: (state) => {
             state.isCreatedError = false;
             state.isCreatedSuccess = false;
+            state.message = '';
+        },
+        resetDeleted: (state) => {
+            state.isDeletedError = false;
+            state.isDeletedSuccess = false;
             state.message = '';
         }
     },
@@ -78,6 +99,7 @@ export const productsSlice = createSlice({
                 state.message = action.payload;
                 state.products = []
             })
+
             .addCase(createProduct.fulfilled, (state, action) => {
                 state.isCreatedError = false;
                 state.isCreatedSuccess = true;
@@ -88,8 +110,19 @@ export const productsSlice = createSlice({
                 state.isCreatedSuccess = false;
                 state.message = action.payload;
             })
+
+            .addCase(deleteProduct.fulfilled, (state, action) => {
+                state.isDeletedError = false;
+                state.isDeletedSuccess = true;
+                state.message = '';
+            })
+            .addCase(deleteProduct.rejected, (state, action) => {
+                state.isDeletedError = true;
+                state.isDeletedSuccess = false;
+                state.message = action.payload;
+            })
     },
 })
 
-export const { reset, resetCreated } = productsSlice.actions
+export const { reset, resetCreated, resetDeleted } = productsSlice.actions
 export default productsSlice.reducer;

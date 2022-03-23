@@ -1,63 +1,63 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import warehousesService from './warehousesService';
+import storesService from './storesService';
 import { AxiosError } from 'axios'
 
 //INTERFACES
-import IWarehouse from '../../interfaces/Warehouse'
+import IStore from '../../interfaces/Store'
 
 interface IInitalState {
-    warehouses: Array<IWarehouse> | [],
+    stores: Array<IStore> | [],
     isError: boolean,
     isRequested: boolean,
     message: string | unknown
 }
 
 const initialState: IInitalState = {
-    warehouses: [],
+    stores: [],
     isError: false,
     isRequested: false,
     message: ''
 }
 
-//Get all warehouses
-export const getWarehouses = createAsyncThunk(
-    'warehouses/all', 
+//Get all stores
+export const getStores = createAsyncThunk(
+    'stores/all', 
     async (_, thunkAPI) => {
         try {
-            return await warehousesService.getWarehouses();
+            return await storesService.getStores();
         } catch (error) {
             const err = error as AxiosError
             return thunkAPI.rejectWithValue(err.response?.data.message);
         }
 })
 
-export const warehousesSlice = createSlice({
-    name: 'warehouses',
+export const storesSlice = createSlice({
+    name: 'stores',
     initialState,
     reducers: {
         reset: (state) => {
             state.isError = false;
             state.isRequested = false;
             state.message = '';
-            state.warehouses = [];
+            state.stores = [];
         }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(getWarehouses.fulfilled, (state, action) => {
+            .addCase(getStores.fulfilled, (state, action) => {
                 state.isError = false;
                 state.isRequested = true;
                 state.message = '';
-                state.warehouses = action.payload;
+                state.stores = action.payload;
             })
-            .addCase(getWarehouses.rejected, (state, action) => {
+            .addCase(getStores.rejected, (state, action) => {
                 state.isError = true;
                 state.isRequested = true;
                 state.message = action.payload;
-                state.warehouses = []
+                state.stores = []
             })
     },
 })
 
-export const { reset } = warehousesSlice.actions
-export default warehousesSlice.reducer;
+export const { reset } = storesSlice.actions
+export default storesSlice.reducer;
