@@ -3,7 +3,7 @@ import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, useTh
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout, reset } from '../../features/auth/authSlice'
-import { reset as resetProducts, resetCreated as resetCreatedProducts } from '../../features/products/productsSlice'
+import { reset as resetProducts, resetCreated as resetCreatedProducts, resetDeleted } from '../../features/products/productsSlice'
 import { reset as resetOrders, resetCreated as resetCreatedOrders } from '../../features/orders/ordersSlice'
 import { reset as resetWarehouses } from '../../features/warehouses/warehousesSlice'
 import { reset as resetStores } from '../../features/store/storesSlice'
@@ -36,6 +36,7 @@ export default function MainDrawer(props: IProps): JSX.Element {
         // Reset Products
         dispatch(resetProducts())
         dispatch(resetCreatedProducts());
+        dispatch(resetDeleted());
         // Reset Orders
         dispatch(resetOrders())
         dispatch(resetCreatedOrders());

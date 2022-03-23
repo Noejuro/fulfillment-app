@@ -21,7 +21,6 @@ export default function MainContainer(): JSX.Element {
                         <Routes>
                             <Route path="/"             element={<Navigate to="/orders" />} />
                             <Route path="orders"        element={<Orders />} />
-                            <Route path="orders/:id"    element={<Orders />} />
                             <Route path="products"      element={<Products />} />
                             <Route path="warehouses"    element={<Warehouses />} />
                             <Route path="*"             element={<Navigate to="/orders" />} />

@@ -49,6 +49,7 @@ export default function Products(): JSX.Element {
 
     }, [dispatch, products.length, products, isError, message, isRequested])
 
+
     useEffect(() => {
 
         if (isDeletedError) {
@@ -65,13 +66,9 @@ export default function Products(): JSX.Element {
 
     }, [dispatch, isDeletedError, isDeletedSuccess, message])
   
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
+    const handleClickOpen = () => { setOpen(true); };
   
-    const handleClose = () => {
-      setOpen(false);
-    };
+    const handleClose = () => { setOpen(false); };
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const newSearch = event.target.value;

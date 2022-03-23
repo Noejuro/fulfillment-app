@@ -17,7 +17,7 @@ import { toast } from 'react-toastify';
 export default function Warehouses(): JSX.Element {
 
     const dispatch = useDispatch();
-    const { warehouses, isError, message }    = useSelector((state: RootState) => state.warehouses)
+    const { warehouses, isError, message }  = useSelector((state: RootState) => state.warehouses)
     
     const [filteredData, setFilteredData]   = useState<IWarehouse[]>(warehouses)
     const [search, setSearch]               = useState<string>("")
@@ -43,6 +43,7 @@ export default function Warehouses(): JSX.Element {
         }            
 
     }, [dispatch, warehouses.length, warehouses, isError, message])
+    
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const newSearch = event.target.value;
