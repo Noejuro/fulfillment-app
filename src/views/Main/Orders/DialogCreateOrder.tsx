@@ -80,14 +80,13 @@ export default function DialogCreateOrder(props: IProps): JSX.Element {
             toast.error("You must select at least 1 product");
         else {
             const newOrder = {client, store: selectedStore === null ? "" : selectedStore._id, warehouse: selectedWarehouse === null ? "" : selectedWarehouse._id, products: selectedProducts}
-            console.log(newOrder);  
             dispatch(createOrder(newOrder));
         }    
     };
 
     const handleChangeProduct = (event: any, newValue: IProduct | null): void => {
         setSelectedProduct(newValue);
-        if(!!newValue && !selectedProducts.some((product: IProduct) => product.id === newValue.id )) {
+        if(!!newValue && !selectedProducts.some((product: IProduct) => product._id === newValue._id )) {
             let tempProducts = [...selectedProducts];
             tempProducts.unshift({...newValue, quantity: 1});
             setSelectedProducts([...tempProducts])
@@ -126,7 +125,7 @@ export default function DialogCreateOrder(props: IProps): JSX.Element {
                                 value={selectedProduct}
                                 onChange={handleChangeProduct}
                                 getOptionLabel={(option: IProduct) => option.name}
-                                isOptionEqualToValue={(option: IProduct, value: IProduct) => option.id === value.id}
+                                isOptionEqualToValue={(option: IProduct, value: IProduct) => option._id === value._id}
                                 renderInput={(params) => <TextField {...params} label="Select Product*" />}
                                 renderOption={(props, option: IProduct) => (
                                     <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>

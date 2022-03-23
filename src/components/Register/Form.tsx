@@ -22,9 +22,13 @@ export default function Form(): JSX.Element {
     const { isError, message } = useSelector((state: RootState) => state.auth)
 
     const onSubmit: SubmitHandler<IRegister> = data => {
-        delete data.confirmPassword
-        const userData: IRegister = {...data}
-        dispatch(registerUser(userData));
+        if(data.confirmPassword === data.password) {
+            delete data.confirmPassword
+            const userData: IRegister = {...data}
+            dispatch(registerUser(userData));
+        } else {
+            toast.error("The password confirmation does not match")
+        }
     };
 
     useEffect(() => {
