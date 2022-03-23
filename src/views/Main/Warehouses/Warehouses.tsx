@@ -76,7 +76,7 @@ export default function Warehouses(): JSX.Element {
             </Slide>
             <Slide direction="up" in={true} timeout={300}>
                 <div className="d-flex flex-row" style={{overflowY: "auto", borderRadius: "1rem 1rem 0 0"}}>
-                    <Datatable data={filteredData} columns={columns} id={"name"} />
+                    <Datatable data={filteredData} columns={columns} id={"_id"} />
                 </div>
             </Slide>
         </>

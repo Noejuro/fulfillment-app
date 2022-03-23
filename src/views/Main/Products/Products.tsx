@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Grid, InputAdornment, Slide, TextField } from '@mui/material'
+import { toast } from 'react-toastify';
 
 //Redux
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { getProducts, reset } from '../../../features/products/productsSlice'
+import { getProducts, reset, resetDeleted, deleteProduct } from '../../../features/products/productsSlice'
 
 //Components
 import Datatable from '../../../components/shared-components/Table/DataTable';
@@ -15,12 +16,12 @@ import IProduct from '../../../interfaces/Product'
 
 //Icons
 import SearchIcon from '@mui/icons-material/Search';
-import { toast } from 'react-toastify';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function Products(): JSX.Element {
 
     const dispatch = useDispatch();
-    const { products, isError, message, isRequested }    = useSelector((state: RootState) => state.products)
+    const { products, isError, message, isRequested, isDeletedError, isDeletedSuccess }    = useSelector((state: RootState) => state.products)
     
     const [filteredData, setFilteredData]   = useState<IProduct[]>(products)
     const [search, setSearch]               = useState<string>("")
@@ -33,7 +34,6 @@ export default function Products(): JSX.Element {
         {id: "price", name: "Price", value: "price", align: 'center' as const, sort: true},
         {id: "quantity", name: "Quantity", value: "quantity", align: 'center' as const, sort: true}
     ]
-
 
     useEffect(() => {
         
@@ -48,6 +48,22 @@ export default function Products(): JSX.Element {
         }            
 
     }, [dispatch, products.length, products, isError, message, isRequested])
+
+    useEffect(() => {
+
+        if (isDeletedError) {
+            toast.error(message as string);
+            dispatch(resetDeleted());
+        }
+        
+        if (isDeletedSuccess) {
+            toast.success("Product deleted");
+            dispatch(getProducts());
+            handleClose();
+            dispatch(resetDeleted());
+        }
+
+    }, [dispatch, isDeletedError, isDeletedSuccess, message])
   
     const handleClickOpen = () => {
       setOpen(true);
@@ -70,6 +86,16 @@ export default function Products(): JSX.Element {
         )
 
         setFilteredData([...res])
+    }
+
+    const deleteProd = (id: string) => {
+        dispatch(deleteProduct(id));
+    }
+
+    const Actions = (props: {id: string}): JSX.Element => {
+        return (
+            <DeleteIcon color='error' sx={{cursor: 'pointer'}} onClick={() => deleteProd(props.id)} />
+        )
     }
 
     return(
@@ -98,11 +124,13 @@ export default function Products(): JSX.Element {
                     </Grid>
                 </div>
             </Slide>
+            
             <Slide direction="up" in={true} timeout={300}>
                 <div className="d-flex flex-row" style={{overflowY: "auto", borderRadius: "1rem 1rem 0 0"}}>
-                    <Datatable data={filteredData} columns={columns} id={"sku"} />
+                    <Datatable data={filteredData} columns={columns} id={"_id"} Actions={Actions} />
                 </div>
             </Slide>
+
             <DialogAddProduct open={open} handleClose={handleClose} />
         </>
     )

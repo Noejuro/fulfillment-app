@@ -1,5 +1,5 @@
 export default interface IWarehouse {
-    id: number,
+    _id: string,
     name: string,
     email: string,
     location: string,

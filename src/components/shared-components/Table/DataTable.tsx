@@ -23,7 +23,7 @@ interface IProps {
     columns: Array<IColumns>,
     data: Array<IData>,
     id: string,
-    Actions?: React.FC<{[key: string]: any }>
+    Actions?: React.FC<{id: string }>
 }
 
 export default function Datatable(props: IProps): JSX.Element {
@@ -57,7 +57,7 @@ export default function Datatable(props: IProps): JSX.Element {
                         !!data.length ?
                             data.map((item) => (
                                 <TableRow
-                                    key={item.id}
+                                    key={item[id]}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     {columns.map(col => 
@@ -74,7 +74,7 @@ export default function Datatable(props: IProps): JSX.Element {
                                     )}
                                     {!!Actions &&  
                                         <TableCell align="center">
-                                            <Actions name={item.name} />
+                                            <Actions id={item._id} />
                                         </TableCell>
                                     }
                                 </TableRow>
@@ -96,7 +96,7 @@ export default function Datatable(props: IProps): JSX.Element {
                     {!!data.length ?
                         <>
                             {data.map((item) => (
-                                <Grid item xs={12} sm={6} className={`${breakpointSM && 'px-2'} py-2`} key={item.id}>
+                                <Grid item xs={12} sm={6} className={`${breakpointSM && 'px-2'} py-2`} key={item[id]}>
                                     <Card className="w-100 h-100" style={{borderRadius: 15}}>
                                         <div className="d-flex flex-column">
                                             <div className="d-flex flex-row mx-0 px-3 py-2" style={{backgroundColor: "#20242f", color: "white"}}>
