@@ -9,6 +9,7 @@ import INewProduct from '../../interfaces/NewProduct'
 interface IInitalState {
     products: Array<IProduct> | [],
     isError: boolean,
+    isRequested: boolean,
     isCreatedSuccess: boolean,
     isCreatedError: boolean,
     message: string | unknown
@@ -17,6 +18,7 @@ interface IInitalState {
 const initialState: IInitalState = {
     products: [],
     isError: false,
+    isRequested: false,
     isCreatedSuccess: false,
     isCreatedError: false,
     message: ''
@@ -54,6 +56,7 @@ export const productsSlice = createSlice({
             state.isError = false;
             state.message = '';
             state.products = [];
+            state.isRequested = false;
         },
         resetCreated: (state) => {
             state.isCreatedError = false;
@@ -64,11 +67,13 @@ export const productsSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getProducts.fulfilled, (state, action) => {
+                state.isRequested = true;
                 state.isError = false;
                 state.message = '';
                 state.products = action.payload;
             })
             .addCase(getProducts.rejected, (state, action) => {
+                state.isRequested = true;
                 state.isError = true;
                 state.message = action.payload;
                 state.products = []
